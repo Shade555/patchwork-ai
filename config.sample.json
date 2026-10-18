@@ -1,0 +1,8 @@
+{
+  "OllamaEndpoint": "http://localhost:11434",
+  "ModelName": "llama3.1:latest",
+  "Theme": "Dark",
+  "DefaultExportDirectory": null,
+  "AutoDetectOnLoad": true,
+  "TimeoutSeconds": 30
+}

@@ -1,0 +1,158 @@
+<UserControl x:Class="PatchworkAI.Desktop.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="950">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="32,24">
+        <StackPanel MaxWidth="850" HorizontalAlignment="Left">
+            
+            <TextBlock Text="Settings &amp; Diagnostics" FontSize="26" FontWeight="SemiBold" 
+                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,20" />
+
+            <!-- Local AI Configuration -->
+            <ui:Card Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Local AI Model Inference (Ollama)" FontSize="16" FontWeight="SemiBold" 
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8" />
+                    <TextBlock Text="Patchwork AI interfaces with local open-weight models via Ollama. No data is ever sent to third-party cloud servers." 
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,16" />
+
+                    <!-- Endpoint input -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Ollama API Endpoint:" VerticalAlignment="Center" FontSize="13" />
+                        <TextBox Grid.Column="1" Text="{Binding Settings.OllamaEndpoint, UpdateSourceTrigger=PropertyChanged}" Height="32" />
+                    </Grid>
+
+                    <!-- Model Name input -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Configured Model Name:" VerticalAlignment="Center" FontSize="13" />
+                        <TextBox Grid.Column="1" Text="{Binding Settings.ModelName, UpdateSourceTrigger=PropertyChanged}" Height="32" />
+                    </Grid>
+
+                    <!-- Status Display & Test Button -->
+                    <DockPanel LastChildFill="False">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Border CornerRadius="12" Padding="10,2" Margin="0,0,10,0"
+                                    Background="{Binding ModelStatus.IsAvailable, Converter={StaticResource StatusToBrushConverter}}">
+                                <TextBlock Text="{Binding ModelStatus.IsAvailable, Converter={StaticResource BoolToStatusTextConverter}}" 
+                                           Foreground="White" FontSize="11" FontWeight="SemiBold" />
+                            </Border>
+                            <TextBlock Text="{Binding ModelStatus.ResponseTimeMs, StringFormat='Response Latency: {0}ms'}" 
+                                       VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Content="Test Ollama Connection" 
+                                    Command="{Binding CheckOllamaStatusCommand}" 
+                                    Padding="14,6" Margin="0,0,8,0" />
+                            <Button Content="Save Settings" 
+                                    Style="{DynamicResource AccentButtonStyle}"
+                                    Command="{Binding SaveSettingsCommand}" 
+                                    Padding="14,6" />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- Detected Models List if available -->
+                    <StackPanel Margin="0,14,0,0" Visibility="{Binding ModelStatus.AvailableModels.Count, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                        <TextBlock Text="Detected Local Models:" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4" />
+                        <ItemsControl ItemsSource="{Binding ModelStatus.AvailableModels}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource ControlFillColorDefaultBrush}" CornerRadius="4" Padding="6,2" Margin="0,2,6,2">
+                                        <TextBlock Text="{Binding}" FontSize="11" FontFamily="Consolas" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+            </ui:Card>
+
+            <!-- Benchmark & Evaluation Section (Section 12) -->
+            <ui:Card Padding="20" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Accuracy &amp; Performance Benchmark" FontSize="16" FontWeight="SemiBold" 
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,6" />
+                    <TextBlock Text="Run a reproducible benchmark comparing deterministic-only rules with AI-assisted proposals on a synthetic test suite." 
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Margin="0,0,0,14" />
+
+                    <Button Content="Run Benchmark Evaluation" 
+                            Command="{Binding RunBenchmarkCommand}"
+                            Padding="16,8" HorizontalAlignment="Left" />
+
+                    <!-- Benchmark Results Card -->
+                    <Border Margin="0,14,0,0" Padding="14" Background="{DynamicResource ControlFillColorDefaultBrush}" CornerRadius="6"
+                            Visibility="{Binding LastBenchmarkResult, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="Benchmark Results (Measured)" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" />
+                            
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Deterministic Latency:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    <TextBlock Text="{Binding LastBenchmarkResult.DeterministicProfilingTimeMs, StringFormat='{}{0} ms'}" FontWeight="Bold" FontSize="13" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="AI Response Latency:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    <TextBlock Text="{Binding LastBenchmarkResult.AiInferenceTimeMs, StringFormat='{}{0} ms'}" FontWeight="Bold" FontSize="13" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="Schema Compliance:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    <TextBlock Text="{Binding LastBenchmarkResult.SchemaValidationRatePercent, StringFormat='{}{0}%'}" FontWeight="Bold" FontSize="13" Foreground="#22C55E" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="3">
+                                    <TextBlock Text="Issues Detected:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    <TextBlock Text="{Binding LastBenchmarkResult.DeterministicIssuesDetected}" FontWeight="Bold" FontSize="13" />
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="{Binding LastBenchmarkResult.SummaryNotes}" TextWrapping="Wrap" FontSize="11" 
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ui:Card>
+
+            <!-- Technical Diagnostics & Privacy Declaration -->
+            <ui:Card Padding="20">
+                <StackPanel>
+                    <TextBlock Text="About &amp; Privacy Architecture" FontSize="16" FontWeight="SemiBold" 
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8" />
+                    
+                    <TextBlock Text="Patchwork AI v1.0.0 (Native Windows Edition)" FontWeight="Medium" FontSize="13" />
+                    <TextBlock Text="Framework: .NET 8.0 Windows Desktop App • ClosedXML • CsvHelper • WPF-UI" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,2,0,10" />
+
+                    <TextBlock Text="Privacy Model:" FontWeight="SemiBold" FontSize="12" Margin="0,4,0,2" />
+                    <TextBlock Text="All document processing is performed locally on your Windows machine. No spreadsheets, row contents, or sensitive business figures are transmitted externally. Local AI queries receive only column headers and representative anonymized values." 
+                               TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </ui:Card>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

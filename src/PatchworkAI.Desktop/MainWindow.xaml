@@ -1,0 +1,202 @@
+<Window x:Class="PatchworkAI.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:views="clr-namespace:PatchworkAI.Desktop.Views"
+        mc:Ignorable="d"
+        Title="Patchwork AI — Native Windows Document Repair Assistant" 
+        Height="780" Width="1200" MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource ApplicationBackgroundBrush}">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- Navigation Sidebar -->
+            <ColumnDefinition Width="220" />
+            <!-- Main Content Area -->
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0" 
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <!-- App Logo & Branding -->
+                    <RowDefinition Height="Auto" />
+                    <!-- Navigation Items -->
+                    <RowDefinition Height="*" />
+                    <!-- Footer Info & Status -->
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Branding Header -->
+                <StackPanel Grid.Row="0" Margin="18,22,18,24">
+                    <TextBlock Text="PATCHWORK AI" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <TextBlock Text="Local Document Assistant" FontSize="11" Margin="0,2,0,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+
+                <!-- Navigation List -->
+                <StackPanel Grid.Row="1" Margin="10,0">
+                    <!-- Home -->
+                    <Button HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Margin="0,2" Padding="12,10"
+                            Command="{Binding NavigateCommand}" CommandParameter="Home">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🏠" Margin="0,0,10,0" FontSize="14" />
+                            <TextBlock Text="Home" FontSize="13" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Import & Analyze -->
+                    <Button HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Margin="0,2" Padding="12,10"
+                            Command="{Binding NavigateCommand}" CommandParameter="Import">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📂" Margin="0,0,10,0" FontSize="14" />
+                            <TextBlock Text="Import &amp; Analyze" FontSize="13" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Issues -->
+                    <Button HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Margin="0,2" Padding="12,10"
+                            Command="{Binding NavigateCommand}" CommandParameter="Issues">
+                        <DockPanel HorizontalAlignment="Stretch" Width="170">
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                                <TextBlock Text="⚠️" Margin="0,0,10,0" FontSize="14" />
+                                <TextBlock Text="Issues" FontSize="13" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="#26F59E0B" CornerRadius="8" Padding="6,1"
+                                    Visibility="{Binding TotalIssuesCount, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                                <TextBlock Text="{Binding TotalIssuesCount}" FontSize="11" FontWeight="Bold" Foreground="#F59E0B" />
+                            </Border>
+                        </DockPanel>
+                    </Button>
+
+                    <!-- Review Changes -->
+                    <Button HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Margin="0,2" Padding="12,10"
+                            Command="{Binding NavigateCommand}" CommandParameter="Review">
+                        <DockPanel HorizontalAlignment="Stretch" Width="170">
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                                <TextBlock Text="🔍" Margin="0,0,10,0" FontSize="14" />
+                                <TextBlock Text="Review Changes" FontSize="13" VerticalAlignment="Center" />
+                            </StackPanel>
+                            <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Background="#2622C55E" CornerRadius="8" Padding="6,1"
+                                    Visibility="{Binding ApprovedTransformationsCount, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                                <TextBlock Text="{Binding ApprovedTransformationsCount}" FontSize="11" FontWeight="Bold" Foreground="#22C55E" />
+                            </Border>
+                        </DockPanel>
+                    </Button>
+
+                    <!-- Export -->
+                    <Button HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Margin="0,2" Padding="12,10"
+                            Command="{Binding NavigateCommand}" CommandParameter="Export">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="💾" Margin="0,0,10,0" FontSize="14" />
+                            <TextBlock Text="Export &amp; History" FontSize="13" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Settings -->
+                    <Button HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Margin="0,2" Padding="12,10"
+                            Command="{Binding NavigateCommand}" CommandParameter="Settings">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⚙️" Margin="0,0,10,0" FontSize="14" />
+                            <TextBlock Text="Settings" FontSize="13" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Sidebar Footer: Local AI connection status -->
+                <Border Grid.Row="2" Padding="14,12" Margin="10" Background="{DynamicResource ControlFillColorDefaultBrush}" CornerRadius="6">
+                    <StackPanel>
+                        <DockPanel LastChildFill="False">
+                            <TextBlock Text="Local AI" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <Border DockPanel.Dock="Right" CornerRadius="6" Width="8" Height="8"
+                                    Background="{Binding ModelStatus.IsAvailable, Converter={StaticResource StatusToBrushConverter}}" />
+                        </DockPanel>
+                        <TextBlock Text="{Binding ModelStatus.ConfiguredModel}" FontSize="11" FontWeight="Medium" 
+                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,3,0,0" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <!-- Global Status Banner -->
+                <RowDefinition Height="Auto" />
+                <!-- Active View Host -->
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Global Status / Notification Banner -->
+            <Border Grid.Row="0" Padding="16,10"
+                    Visibility="{Binding GlobalStatusMessage, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="#1A22C55E" />
+                        <Setter Property="BorderBrush" Value="#22C55E" />
+                        <Setter Property="BorderThickness" Value="0,0,0,1" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsStatusError}" Value="True">
+                                <Setter Property="Background" Value="#1AEF4444" />
+                                <Setter Property="BorderBrush" Value="#EF4444" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <TextBlock Text="{Binding GlobalStatusMessage}" FontSize="12" FontWeight="Medium">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="#22C55E" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsStatusError}" Value="True">
+                                    <Setter Property="Foreground" Value="#EF4444" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Border>
+
+            <!-- Views Switcher -->
+            <Grid Grid.Row="1">
+                <!-- Home View -->
+                <views:HomeView Visibility="{Binding ActiveView, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Home}" />
+
+                <!-- Import & Analyze View -->
+                <views:ImportAnalyzeView Visibility="{Binding ActiveView, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Import}" />
+
+                <!-- Issues View -->
+                <views:IssuesView Visibility="{Binding ActiveView, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Issues}" />
+
+                <!-- Review View -->
+                <views:ReviewView Visibility="{Binding ActiveView, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Review}" />
+
+                <!-- Export View -->
+                <views:ExportView Visibility="{Binding ActiveView, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Export}" />
+
+                <!-- Settings View -->
+                <views:SettingsView Visibility="{Binding ActiveView, Converter={StaticResource StatusToVisibilityConverter}, ConverterParameter=Settings}" />
+            </Grid>
+
+            <!-- Busy / Loading Overlay -->
+            <Grid Grid.RowSpan="2" Background="#80000000"
+                  Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" 
+                        Padding="28,20" CornerRadius="8" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <ProgressBar IsIndeterminate="True" Width="180" Height="4" Margin="0,0,0,12" />
+                        <TextBlock Text="{Binding BusyStatusText}" FontSize="13" FontWeight="Medium" 
+                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,22 @@
+<Application x:Class="PatchworkAI.Desktop.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:conv="clr-namespace:PatchworkAI.Desktop.Converters"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Theme/Dark.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Wpf.Ui;component/Resources/Wpf.Ui.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <conv:SeverityToBrushConverter x:Key="SeverityToBrushConverter" />
+            <conv:StatusToBrushConverter x:Key="StatusToBrushConverter" />
+            <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <conv:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVisibilityConverter" />
+            <conv:BoolToStatusTextConverter x:Key="BoolToStatusTextConverter" />
+            <conv:StatusToVisibilityConverter x:Key="StatusToVisibilityConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

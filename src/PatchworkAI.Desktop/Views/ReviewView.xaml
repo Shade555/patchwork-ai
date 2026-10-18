@@ -1,0 +1,161 @@
+<UserControl x:Class="PatchworkAI.Desktop.Views.ReviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="950">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <!-- Review Action Toolbar -->
+            <RowDefinition Height="Auto" />
+            <!-- Main Content: Side by Side Transformations Table -->
+            <RowDefinition Height="*" />
+            <!-- Bottom Summary & Apply Bar -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Top Action & Filter Toolbar -->
+        <ui:Card Grid.Row="0" Margin="0,0,0,16" Padding="14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Bulk Actions -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Bulk Approve Safe Deterministic" 
+                            Style="{DynamicResource AccentButtonStyle}"
+                            Command="{Binding BulkApproveSafeDeterministicCommand}"
+                            Padding="14,6" Margin="0,0,8,0" />
+                    <Button Content="Approve All" 
+                            Command="{Binding ApproveAllTransformationsCommand}"
+                            Padding="12,6" Margin="0,0,8,0" />
+                    <Button Content="Reject All" 
+                            Command="{Binding RejectAllTransformationsCommand}"
+                            Padding="12,6" Margin="0,0,8,0" />
+                    <Button Content="Undo Last" 
+                            IsEnabled="{Binding CanUndo}"
+                            Command="{Binding UndoLastActionCommand}"
+                            Padding="12,6" />
+                </StackPanel>
+
+                <!-- Status Filter -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Filter Status: " VerticalAlignment="Center" Margin="0,0,6,0" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <ComboBox Width="130" Height="30"
+                              SelectedValue="{Binding SelectedReviewStatusFilter}"
+                              SelectionChanged="StatusComboBox_SelectionChanged">
+                        <ComboBoxItem Content="All Statuses" IsSelected="True" />
+                        <ComboBoxItem Content="Pending" />
+                        <ComboBoxItem Content="Approved" />
+                        <ComboBoxItem Content="Rejected" />
+                        <ComboBoxItem Content="Applied" />
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </ui:Card>
+
+        <!-- Main Body: Review Table -->
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding FilteredTransformations}"
+                  SelectedItem="{Binding SelectedTransformation}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  HeadersVisibility="Column"
+                  GridLinesVisibility="Horizontal"
+                  SelectionMode="Single"
+                  BorderThickness="1"
+                  BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                  Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Row" Binding="{Binding RowIndex}" Width="55" />
+                <DataGridTextColumn Header="Column" Binding="{Binding ColumnName}" Width="120" />
+                
+                <!-- Original Value -->
+                <DataGridTemplateColumn Header="Original Value" Width="1.5*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding OriginalValue}" FontFamily="Consolas" Foreground="#EF4444" 
+                                       VerticalAlignment="Center" Margin="4,0" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!-- Proposed Value -->
+                <DataGridTemplateColumn Header="Proposed Replacement" Width="1.5*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ProposedValue}" FontFamily="Consolas" Foreground="#22C55E" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" Margin="4,0" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!-- Reason & Source -->
+                <DataGridTextColumn Header="Reason / Rule" Binding="{Binding Reason}" Width="2*" />
+                <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="100" />
+
+                <!-- Status Badge -->
+                <DataGridTemplateColumn Header="Status" Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="4" Padding="6,2" HorizontalAlignment="Left"
+                                    Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}}">
+                                <TextBlock Text="{Binding Status}" Foreground="White" FontSize="11" FontWeight="SemiBold" />
+                            </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <!-- Action Buttons Per Row -->
+                <DataGridTemplateColumn Header="Action" Width="130">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="Approve" 
+                                        Click="RowApprove_Click"
+                                        Padding="6,2" Margin="0,0,4,0" FontSize="11" />
+                                <Button Content="Reject" 
+                                        Click="RowReject_Click"
+                                        Padding="6,2" FontSize="11" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Bottom Summary & Apply Bar -->
+        <ui:Card Grid.Row="2" Margin="0,16,0,0" Padding="14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Counters -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                        <Run Text="Approved: " /><Run Text="{Binding ApprovedTransformationsCount}" FontWeight="Bold" Foreground="#22C55E" />
+                        <Run Text="   •   Pending: " /><Run Text="{Binding PendingTransformationsCount}" FontWeight="Bold" Foreground="#F59E0B" />
+                        <Run Text="   •   Rejected: " /><Run Text="{Binding RejectedTransformationsCount}" FontWeight="Bold" Foreground="#EF4444" />
+                    </TextBlock>
+                </StackPanel>
+
+                <!-- Apply Button -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="Apply Approved Fixes to Dataset" 
+                            Style="{DynamicResource AccentButtonStyle}"
+                            Command="{Binding ApplyApprovedTransformationsCommand}"
+                            Padding="16,8" Margin="0,0,8,0" />
+                    <Button Content="Proceed to Export &gt;" 
+                            Command="{Binding NavigateCommand}" CommandParameter="Export"
+                            Padding="16,8" />
+                </StackPanel>
+            </Grid>
+        </ui:Card>
+    </Grid>
+</UserControl>

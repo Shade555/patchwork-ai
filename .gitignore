@@ -1,0 +1,33 @@
+## Visual Studio & .NET Build Artifacts
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+
+## Test Results & Coverage
+[Tt]est[Rr]esults/
+*.trx
+*.coverage
+*.coveragexml
+
+## User & Local Configuration (Zero credential leak)
+settings.local.json
+*.local.json
+appsettings.Development.json
+
+## Temporary & Swap Files
+*.log
+*.tmp
+*.bak
+~$*
+*.crdownload
+
+## Windows OS Files
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/

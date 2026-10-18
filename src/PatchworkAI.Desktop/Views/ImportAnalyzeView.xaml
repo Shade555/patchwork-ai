@@ -1,0 +1,128 @@
+<UserControl x:Class="PatchworkAI.Desktop.Views.ImportAnalyzeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="950">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <!-- Top Toolbar & File Metadata -->
+            <RowDefinition Height="Auto" />
+            <!-- Main Content: Preview Grid or Empty Drop Zone -->
+            <RowDefinition Height="*" />
+            <!-- Action Bar -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Top Header & Metadata Card -->
+        <ui:Card Grid.Row="0" Margin="0,0,0,16" Padding="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- File Details -->
+                <StackPanel Grid.Column="0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="Active File: " FontSize="14" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        <TextBlock Text="{Binding CurrentDataset.FileName, FallbackValue='No file loaded'}" 
+                                   FontWeight="SemiBold" FontSize="15" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="4,0,0,0" />
+                        <Border Background="{DynamicResource AccentFillColorDefaultBrush}" CornerRadius="4" Padding="6,2" Margin="12,0,0,0"
+                                Visibility="{Binding HasActiveDataset, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="{Binding CurrentDataset.Format}" Foreground="White" FontSize="11" FontWeight="Bold" />
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0" 
+                                Visibility="{Binding HasActiveDataset, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12">
+                            <Run Text="Rows: " /><Run Text="{Binding CurrentDataset.TotalRows}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <Run Text="   |   Columns: " /><Run Text="{Binding CurrentDataset.TotalColumns}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <Run Text="   |   Size: " /><Run Text="{Binding CurrentDataset.FileSizeBytes, StringFormat='{}{0:N0} bytes'}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                        </TextBlock>
+
+                        <!-- Sheet selector for XLSX -->
+                        <StackPanel Orientation="Horizontal" Margin="24,0,0,0"
+                                    Visibility="{Binding AvailableSheets.Count, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                            <TextBlock Text="Worksheet: " VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <ComboBox ItemsSource="{Binding AvailableSheets}" 
+                                      SelectedItem="{Binding SelectedSheet}"
+                                      SelectionChanged="SheetComboBox_SelectionChanged"
+                                      Width="140" Height="28" Margin="4,0,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Change / Open File Button -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Choose File..." 
+                            Command="{Binding BrowseAndImportFileCommand}"
+                            Padding="14,6" Margin="0,0,8,0" />
+                    <Button Content="Load Sample" 
+                            Command="{Binding LoadSampleDatasetCommand}"
+                            Padding="14,6" />
+                </StackPanel>
+            </Grid>
+        </ui:Card>
+
+        <!-- Main Body: Data Grid or Drag & Drop Area -->
+        <Grid Grid.Row="1">
+            <!-- Empty State / Drag and Drop Area -->
+            <Border BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" 
+                    BorderThickness="2" CornerRadius="8" 
+                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    AllowDrop="True" Drop="FileDropBorder_Drop" DragOver="FileDropBorder_DragOver"
+                    Visibility="{Binding HasActiveDataset, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=invert}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="Drag and drop a CSV or XLSX file here" FontSize="18" FontWeight="SemiBold" 
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" HorizontalAlignment="Center" />
+                    <TextBlock Text="Or click the button below to browse your computer" FontSize="13" Margin="0,6,0,16" 
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" />
+                    <Button Content="Browse Files..." 
+                            Style="{DynamicResource AccentButtonStyle}"
+                            Command="{Binding BrowseAndImportFileCommand}"
+                            HorizontalAlignment="Center" Padding="20,10" />
+                </StackPanel>
+            </Border>
+
+            <!-- Data Preview Grid -->
+            <DataGrid ItemsSource="{Binding PreviewDataTable}" 
+                      AutoGenerateColumns="True"
+                      IsReadOnly="True"
+                      HeadersVisibility="All"
+                      GridLinesVisibility="Horizontal"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto"
+                      BorderThickness="1"
+                      BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                      Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                      Visibility="{Binding HasActiveDataset, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </Grid>
+
+        <!-- Action Bar at Bottom -->
+        <Grid Grid.Row="2" Margin="0,16,0,0" Visibility="{Binding HasActiveDataset, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Original source file is safely protected in read-only mode." 
+                           FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Content="Run Deterministic Analysis" 
+                        Command="{Binding RunDeterministicAnalysisCommand}"
+                        Padding="16,8" Margin="0,0,10,0" />
+                <Button Content="Run AI-Assisted Analysis" 
+                        Style="{DynamicResource AccentButtonStyle}"
+                        Command="{Binding RunAiAssistedAnalysisCommand}"
+                        Padding="16,8" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

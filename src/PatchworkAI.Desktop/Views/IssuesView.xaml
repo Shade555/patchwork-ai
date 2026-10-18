@@ -1,0 +1,210 @@
+<UserControl x:Class="PatchworkAI.Desktop.Views.IssuesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="950">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <!-- Stat Cards -->
+            <RowDefinition Height="Auto" />
+            <!-- Filter Bar -->
+            <RowDefinition Height="Auto" />
+            <!-- Main Content: Issue List and Detail Panel -->
+            <RowDefinition Height="*" />
+            <!-- Bottom Action -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Stat Cards Row -->
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Total Issues -->
+            <ui:Card Grid.Column="0" Padding="14,10">
+                <StackPanel>
+                    <TextBlock Text="Total Issues" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <TextBlock Text="{Binding TotalIssuesCount}" FontSize="24" FontWeight="Bold" Margin="0,2,0,0" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                </StackPanel>
+            </ui:Card>
+
+            <!-- Errors -->
+            <ui:Card Grid.Column="2" Padding="14,10">
+                <StackPanel>
+                    <TextBlock Text="Errors" FontSize="12" Foreground="#EF4444" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding ErrorIssuesCount}" FontSize="24" FontWeight="Bold" Margin="0,2,0,0" Foreground="#EF4444" />
+                </StackPanel>
+            </ui:Card>
+
+            <!-- Warnings -->
+            <ui:Card Grid.Column="4" Padding="14,10">
+                <StackPanel>
+                    <TextBlock Text="Warnings" FontSize="12" Foreground="#F59E0B" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding WarningIssuesCount}" FontSize="24" FontWeight="Bold" Margin="0,2,0,0" Foreground="#F59E0B" />
+                </StackPanel>
+            </ui:Card>
+
+            <!-- Informational -->
+            <ui:Card Grid.Column="6" Padding="14,10">
+                <StackPanel>
+                    <TextBlock Text="Notices / Info" FontSize="12" Foreground="#3B82F6" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding InfoIssuesCount}" FontSize="24" FontWeight="Bold" Margin="0,2,0,0" Foreground="#3B82F6" />
+                </StackPanel>
+            </ui:Card>
+        </Grid>
+
+        <!-- Filter Bar -->
+        <ui:Card Grid.Row="1" Margin="0,0,0,16" Padding="12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="180" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Search -->
+                <TextBox Grid.Column="0" 
+                         Text="{Binding SearchIssueText, UpdateSourceTrigger=PropertyChanged}"
+                         TextChanged="SearchBox_TextChanged"
+                         VerticalAlignment="Center" Height="32" />
+
+                <!-- Category Filter -->
+                <ComboBox Grid.Column="2" 
+                          SelectedValue="{Binding SelectedCategoryFilter}"
+                          SelectionChanged="CategoryComboBox_SelectionChanged"
+                          VerticalAlignment="Center" Height="32">
+                    <ComboBoxItem Content="All Categories" IsSelected="True" />
+                    <ComboBoxItem Content="LeadingTrailingWhitespace" />
+                    <ComboBoxItem Content="NumbersStoredAsText" />
+                    <ComboBoxItem Content="InconsistentDateFormats" />
+                    <ComboBoxItem Content="InconsistentCapitalization" />
+                    <ComboBoxItem Content="DuplicateRows" />
+                    <ComboBoxItem Content="MissingValues" />
+                    <ComboBoxItem Content="CategoricalInconsistencies" />
+                    <ComboBoxItem Content="MixedDataTypes" />
+                    <ComboBoxItem Content="InvalidEmails" />
+                    <ComboBoxItem Content="SuspiciousOutliers" />
+                    <ComboBoxItem Content="InconsistentCurrencyFormatting" />
+                    <ComboBoxItem Content="AmbiguousColumnNames" />
+                </ComboBox>
+
+                <!-- Severity Filter -->
+                <ComboBox Grid.Column="4" HorizontalAlignment="Left" Width="160"
+                          SelectedValue="{Binding SelectedSeverityFilter}"
+                          SelectionChanged="SeverityComboBox_SelectionChanged"
+                          VerticalAlignment="Center" Height="32">
+                    <ComboBoxItem Content="All Severities" IsSelected="True" />
+                    <ComboBoxItem Content="Error" />
+                    <ComboBoxItem Content="Warning" />
+                    <ComboBoxItem Content="Info" />
+                </ComboBox>
+            </Grid>
+        </ui:Card>
+
+        <!-- Main Content: DataGrid and Detail Panel -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Issues Table -->
+            <DataGrid Grid.Column="0"
+                      ItemsSource="{Binding FilteredIssues}"
+                      SelectedItem="{Binding SelectedIssue}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="Horizontal"
+                      SelectionMode="Single"
+                      BorderThickness="1"
+                      BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                      Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding IssueId}" Width="65" />
+                    <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="150" />
+                    <DataGridTextColumn Header="Column" Binding="{Binding Column}" Width="120" />
+                    <DataGridTextColumn Header="Rows" Binding="{Binding AffectedRowCount}" Width="60" />
+                    <DataGridTemplateColumn Header="Severity" Width="85">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="4" Padding="6,2" HorizontalAlignment="Left"
+                                        Background="{Binding Severity, Converter={StaticResource SeverityToBrushConverter}}">
+                                    <TextBlock Text="{Binding Severity}" Foreground="White" FontSize="11" FontWeight="SemiBold" />
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Explanation" Binding="{Binding Explanation}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Issue Detail Side Card -->
+            <ui:Card Grid.Column="2" Padding="20">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Issue Details" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,12" />
+
+                        <TextBlock Text="{Binding SelectedIssue.Category, StringFormat='Category: {0}', FallbackValue='Select an issue to inspect details'}" 
+                                   FontWeight="Medium" FontSize="14" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                        
+                        <TextBlock Text="{Binding SelectedIssue.Column, StringFormat='Target Column: {0}'}" 
+                                   Margin="0,4,0,10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" />
+
+                        <TextBlock Text="Explanation:" FontWeight="SemiBold" FontSize="12" Margin="0,4,0,2" />
+                        <TextBlock Text="{Binding SelectedIssue.Explanation}" TextWrapping="Wrap" FontSize="12" 
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12" />
+
+                        <TextBlock Text="Proposed Repair:" FontWeight="SemiBold" FontSize="12" Margin="0,4,0,2" />
+                        <TextBlock Text="{Binding SelectedIssue.ProposedFixDescription}" TextWrapping="Wrap" FontSize="12" 
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12" />
+
+                        <!-- Ambiguity Warning Box if present -->
+                        <Border Background="#26F59E0B" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,4,0,12"
+                                Visibility="{Binding SelectedIssue.AmbiguityReason, Converter={StaticResource NullOrEmptyToVisibilityConverter}}">
+                            <StackPanel>
+                                <TextBlock Text="Requires User Review (Ambiguous)" FontWeight="Bold" FontSize="11" Foreground="#F59E0B" />
+                                <TextBlock Text="{Binding SelectedIssue.AmbiguityReason}" TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,2,0,0" />
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="Sample Occurrences:" FontWeight="SemiBold" FontSize="12" Margin="0,4,0,4" />
+                        <ItemsControl ItemsSource="{Binding SelectedIssue.ExampleValues}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource ControlFillColorDefaultBrush}" CornerRadius="4" Padding="8,4" Margin="0,2">
+                                        <TextBlock Text="{Binding}" FontFamily="Consolas" FontSize="11" Foreground="{DynamicResource TextFillColorPrimaryBrush}" TextWrapping="Wrap" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </ui:Card>
+        </Grid>
+
+        <!-- Bottom Action Bar -->
+        <Grid Grid.Row="3" Margin="0,16,0,0">
+            <DockPanel LastChildFill="False">
+                <Button DockPanel.Dock="Right" 
+                        Content="Proceed to Review Changes &gt;" 
+                        Style="{DynamicResource AccentButtonStyle}"
+                        Command="{Binding NavigateCommand}" CommandParameter="Review"
+                        Padding="18,8" />
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>
