@@ -94,8 +94,8 @@ namespace PatchworkAI.Core.Models
         public List<DataRowModel> Rows { get; set; } = new();
         public DateTime LoadedAt { get; set; } = DateTime.UtcNow;
 
-        public int TotalRows => Rows.Count;
-        public int TotalColumns => Columns.Count;
+        public int TotalRows { get => Rows.Count; set { } }
+        public int TotalColumns { get => Columns.Count; set { } }
     }
 
     public class DataIssue

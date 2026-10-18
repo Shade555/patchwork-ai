@@ -98,10 +98,10 @@
                     <TextBlock Text="Active Dataset Session" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                     <TextBlock Text="{Binding CurrentDataset.FileName, StringFormat='File: {0}'}" FontWeight="Medium" Margin="0,6,0,2" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                     <TextBlock Margin="0,0,0,12" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12">
-                        <Run Text="Rows: " /><Run Text="{Binding CurrentDataset.TotalRows}" FontWeight="SemiBold" />
-                        <Run Text="   •   Columns: " /><Run Text="{Binding CurrentDataset.TotalColumns}" FontWeight="SemiBold" />
-                        <Run Text="   •   Issues Detected: " /><Run Text="{Binding TotalIssuesCount}" FontWeight="SemiBold" />
-                        <Run Text="   •   Pending Fixes: " /><Run Text="{Binding PendingTransformationsCount}" FontWeight="SemiBold" />
+                        <Run Text="Rows: " /><Run Text="{Binding CurrentDataset.TotalRows, Mode=OneWay}" FontWeight="SemiBold" />
+                        <Run Text="   •   Columns: " /><Run Text="{Binding CurrentDataset.TotalColumns, Mode=OneWay}" FontWeight="SemiBold" />
+                        <Run Text="   •   Issues Detected: " /><Run Text="{Binding TotalIssuesCount, Mode=OneWay}" FontWeight="SemiBold" />
+                        <Run Text="   •   Pending Fixes: " /><Run Text="{Binding PendingTransformationsCount, Mode=OneWay}" FontWeight="SemiBold" />
                     </TextBlock>
                     <StackPanel Orientation="Horizontal">
                         <Button Content="View &amp; Inspect Dataset" Command="{Binding NavigateCommand}" CommandParameter="Import" Margin="0,0,8,0" Style="{DynamicResource AccentButtonStyle}" Padding="12,6" />

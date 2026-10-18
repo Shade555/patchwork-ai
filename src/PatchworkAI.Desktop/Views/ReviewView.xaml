@@ -139,9 +139,9 @@
                 <!-- Counters -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock FontSize="13" Foreground="{DynamicResource TextFillColorSecondaryBrush}">
-                        <Run Text="Approved: " /><Run Text="{Binding ApprovedTransformationsCount}" FontWeight="Bold" Foreground="#22C55E" />
-                        <Run Text="   •   Pending: " /><Run Text="{Binding PendingTransformationsCount}" FontWeight="Bold" Foreground="#F59E0B" />
-                        <Run Text="   •   Rejected: " /><Run Text="{Binding RejectedTransformationsCount}" FontWeight="Bold" Foreground="#EF4444" />
+                        <Run Text="Approved: " /><Run Text="{Binding ApprovedTransformationsCount, Mode=OneWay}" FontWeight="Bold" Foreground="#22C55E" />
+                        <Run Text="   •   Pending: " /><Run Text="{Binding PendingTransformationsCount, Mode=OneWay}" FontWeight="Bold" Foreground="#F59E0B" />
+                        <Run Text="   •   Rejected: " /><Run Text="{Binding RejectedTransformationsCount, Mode=OneWay}" FontWeight="Bold" Foreground="#EF4444" />
                     </TextBlock>
                 </StackPanel>
 

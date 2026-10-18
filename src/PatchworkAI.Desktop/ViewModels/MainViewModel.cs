@@ -106,15 +106,15 @@ namespace PatchworkAI.Desktop.ViewModels
         private string _searchIssueText = string.Empty;
 
         // Statistics
-        public int TotalIssuesCount => DetectedIssues.Count;
-        public int ErrorIssuesCount => DetectedIssues.Count(i => i.Severity == IssueSeverity.Error);
-        public int WarningIssuesCount => DetectedIssues.Count(i => i.Severity == IssueSeverity.Warning);
-        public int InfoIssuesCount => DetectedIssues.Count(i => i.Severity == IssueSeverity.Info);
-        public int ApprovedTransformationsCount => ProposedTransformations.Count(t => t.Status == TransformationStatus.Approved || t.Status == TransformationStatus.Applied);
-        public int PendingTransformationsCount => ProposedTransformations.Count(t => t.Status == TransformationStatus.Pending);
-        public int RejectedTransformationsCount => ProposedTransformations.Count(t => t.Status == TransformationStatus.Rejected);
-        public bool HasActiveDataset => CurrentDataset != null && CurrentDataset.Rows.Count > 0;
-        public bool CanUndo => _transformationExecutor.CanUndo;
+        public int TotalIssuesCount { get => DetectedIssues.Count; set { } }
+        public int ErrorIssuesCount { get => DetectedIssues.Count(i => i.Severity == IssueSeverity.Error); set { } }
+        public int WarningIssuesCount { get => DetectedIssues.Count(i => i.Severity == IssueSeverity.Warning); set { } }
+        public int InfoIssuesCount { get => DetectedIssues.Count(i => i.Severity == IssueSeverity.Info); set { } }
+        public int ApprovedTransformationsCount { get => ProposedTransformations.Count(t => t.Status == TransformationStatus.Approved || t.Status == TransformationStatus.Applied); set { } }
+        public int PendingTransformationsCount { get => ProposedTransformations.Count(t => t.Status == TransformationStatus.Pending); set { } }
+        public int RejectedTransformationsCount { get => ProposedTransformations.Count(t => t.Status == TransformationStatus.Rejected); set { } }
+        public bool HasActiveDataset { get => CurrentDataset != null && CurrentDataset.Rows.Count > 0; set { } }
+        public bool CanUndo { get => _transformationExecutor.CanUndo; set { } }
 
         public MainViewModel(
             IFileImportService fileImportService,

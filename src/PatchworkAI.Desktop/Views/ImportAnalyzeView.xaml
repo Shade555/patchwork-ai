@@ -39,9 +39,9 @@
                     <StackPanel Orientation="Horizontal" Margin="0,8,0,0" 
                                 Visibility="{Binding HasActiveDataset, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12">
-                            <Run Text="Rows: " /><Run Text="{Binding CurrentDataset.TotalRows}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-                            <Run Text="   |   Columns: " /><Run Text="{Binding CurrentDataset.TotalColumns}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-                            <Run Text="   |   Size: " /><Run Text="{Binding CurrentDataset.FileSizeBytes, StringFormat='{}{0:N0} bytes'}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <Run Text="Rows: " /><Run Text="{Binding CurrentDataset.TotalRows, Mode=OneWay}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <Run Text="   |   Columns: " /><Run Text="{Binding CurrentDataset.TotalColumns, Mode=OneWay}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <Run Text="   |   Size: " /><Run Text="{Binding CurrentDataset.FileSizeBytes, Mode=OneWay, StringFormat='{}{0:N0} bytes'}" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                         </TextBlock>
 
                         <!-- Sheet selector for XLSX -->

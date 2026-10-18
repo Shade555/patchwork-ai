@@ -80,9 +80,9 @@
                         <StackPanel Grid.Column="3">
                             <TextBlock Text="Cells / Rows Modified:" FontSize="11" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                             <TextBlock FontSize="15" FontWeight="Bold" Margin="0,2,0,0">
-                                <Run Text="{Binding LastExportReport.AffectedCellsCount}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                <Run Text="{Binding LastExportReport.AffectedCellsCount, Mode=OneWay}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                                 <Run Text=" cells / " Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" />
-                                <Run Text="{Binding LastExportReport.AffectedRowsCount}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                <Run Text="{Binding LastExportReport.AffectedRowsCount, Mode=OneWay}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                                 <Run Text=" rows" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" />
                             </TextBlock>
                         </StackPanel>
